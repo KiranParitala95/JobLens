@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Reviewing {{ formatted_date }} - JobLens{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <div class="spinner"></div>
+        <h3 class="display-font mt-4 mb-1">Reviewing {{ formatted_date }}</h3>
+        <p class="text-muted" id="statusLine" style="transition: opacity 0.4s; min-height: 3rem;">Classifying and extracting details from this day's mail...</p>
+    </div>
+
+    <script>
+        // Friendly one-liners so a slow day doesn't feel stuck. They repeat
+        // in order until the page is done.
+        const statusLine = document.getElementById("statusLine");
+        const reassurance = [
+            "Reading your emails, one by one...",
+            "Sorting rejections, offers and interviews...",
+            "Checking senders, to keep you safe...",
+            "Good things take a moment. We are on it...",
+            "We are almost there. Thank you for your patience...",
+            "Still working, just a little longer..."
+        ];
+        let reassuranceIndex = 0;
+        const reassuranceTimer = setInterval(function () {
+            // Fix the line to show now, so the delayed text change below
+            // cannot read a moved index (that left the line blank).
+            const line = reassurance[reassuranceIndex % reassurance.length];
+            reassuranceIndex += 1;
+            statusLine.style.opacity = 0;
+            setTimeout(function () {
+                statusLine.textContent = line;
+                statusLine.style.opacity = 1;
+            }, 400);
+        }, 4000);
+
+        fetch("{{ url_for('emails.process', date_str=date_str) }}", { method: "POST" })
+            .then(async (response) => {
+                if (response.status === 401) {
+                    // Google connection expired - reconnect once.
+                    const data = await response.json();
+                    window.location.replace(data.reconnect_url);
+                    return;
+                }
+                if (!response.ok) {
+                    // The scan itself failed - say so, instead of moving on
+                    // to a results page that would wrongly look empty.
+                    throw new Error("scan failed");
+                }
+                const data = await response.json();
+                const failed = data.failed_count || 0;
+                // replace() keeps this spinner page out of browser history,
+                // so Back never lands on a frozen spinner.
+                window.location.replace(
+                    "{{ url_for('emails.results', date_str=date_str) }}" +
+                    (failed ? "?failed=" + failed : "")
+                );
+            })
+            .catch(() => {
+                clearInterval(reassuranceTimer);
+                statusLine.style.opacity = 1;
+                statusLine.textContent =
+                    "Something went wrong - please go back and try again.";
+            });
+
+        // If the browser restores this page from its back/forward cache,
+        // the script above doesn't re-run - reload so it processes normally.
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+{% endblock %}

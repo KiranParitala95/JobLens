@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{{ formatted_date }} - JobLens{% endblock %}
+{% block container_class %}dashboard-container{% endblock %}
+
+{% block content %}
+    <style>
+        /* Category cards side by side. Each one is a drop-down: closed it
+           shows the heading and count, open it shows its list inside. */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 0.9rem;
+            align-items: start; /* a closed card does not stretch to an open one */
+        }
+        .cat-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-top: 3px solid #c7d2fe;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(59, 86, 232, 0.07);
+        }
+        .cat-card[open] { border-top-color: #3b56e8; }
+        .cat-card summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.9rem 1.1rem;
+        }
+        .cat-card summary::-webkit-details-marker { display: none; }
+        .cat-card .cat-name { font-size: 0.85rem; font-weight: 600; color: #374151; }
+        .cat-card .cat-count { font-size: 1.5rem; font-weight: 700; color: #3b56e8; line-height: 1; }
+        .cat-card .cat-chevron { color: #9ca3af; transition: transform 0.15s; }
+        .cat-card[open] .cat-chevron { transform: rotate(180deg); }
+        .cat-card .cat-note { font-size: 0.78rem; color: #6b7280; padding: 0 1.1rem 0.4rem; }
+        .cat-card .cat-body {
+            padding: 0 1.1rem 0.9rem;
+            max-height: 420px;   /* long lists scroll inside the card */
+            overflow-y: auto;
+        }
+    </style>
+    {% macro sender_badge(x) %}
+        {% if x.sender_check %}
+            <div class="mt-1">
+                {% if x.sender_check == "direct" %}
+                    <span class="badge bg-success" style="font-size: 0.7rem;">Direct from company</span>
+                {% elif x.sender_check == "platform" %}
+                    <span class="badge bg-secondary" style="font-size: 0.7rem;">Via recruiting platform or agency</span>
+                {% else %}
+                    <span class="badge bg-danger" style="font-size: 0.7rem;">Could not verify sender</span>
+                {% endif %}
+                {% if x.sender_note %}<span class="text-muted" style="font-size: 0.78rem;">{{ x.sender_note }}</span>{% endif %}
+            </div>
+        {% endif %}
+    {% endmacro %}
+    {% macro company_row(detail, n) %}
+        <div class="numbered-item">
+            <div class="item-number">{{ n }}</div>
+            <div class="item-text">
+                <strong>{{ detail.company }}</strong>{% if detail.role %} &mdash; {{ detail.role }}{% endif %}{% if detail.company_missing %} <span class="text-muted" style="font-size: 0.78rem;">(employer not named in the email)</span>{% endif %}{% if detail.from_spam %} <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">from Spam</span>{% endif %}{% if detail.from_trash %} <span class="badge bg-dark" style="font-size: 0.7rem;">Deleted (in Trash)</span>{% endif %}
+                {{ sender_badge(detail) }}
+            </div>
+        </div>
+    {% endmacro %}
+    {% macro source_row(item, n) %}
+        <div class="numbered-item">
+            <div class="item-number">{{ n }}</div>
+            <div class="item-text"><strong>{{ item.source }}</strong> &mdash; {{ item.summary }}{% if item.from_spam %} <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">from Spam</span>{% endif %}{% if item.from_trash %} <span class="badge bg-dark" style="font-size: 0.7rem;">Deleted (in Trash)</span>{% endif %}
+                {{ sender_badge(item) }}
+            </div>
+        </div>
+    {% endmacro %}
+    {% macro chevron() %}<svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>{% endmacro %}
+    <h2 class="text-center fw-bold mb-2 display-font">{{ formatted_date }}</h2>
+    <p class="text-center text-muted mb-4">
+        {% if counts %}
+            Here's what was found on this day
+        {% else %}
+            No job-search activity found on this day
+        {% endif %}
+    </p>
+
+    {% if failed_count %}
+        <div class="alert alert-warning" role="alert">
+            {{ failed_count }} email{{ "s" if failed_count != 1 }} could not be processed this time (the AI service may be busy). Open this day again from the calendar to try {{ "them" if failed_count != 1 else "it" }} again.
+        </div>
+    {% endif %}
+
+    {% if ordered_categories or recruiter_items or general_items %}
+        <div class="cat-grid">
+            {% for category in ordered_categories %}
+                <details class="cat-card">
+                    <summary>
+                        <span class="cat-name">{{ category_labels.get(category, category) }}</span>
+                        <span style="display: flex; align-items: center; gap: 0.6rem;"><span class="cat-count">{{ counts[category] }}</span>{{ chevron() }}</span>
+                    </summary>
+                    <div class="cat-body">
+                        {% for detail in category_details.get(category, []) %}
+                            {{ company_row(detail, loop.index) }}
+                        {% endfor %}
+                    </div>
+                </details>
+            {% endfor %}
+
+            {% if recruiter_items %}
+                <details class="cat-card">
+                    <summary>
+                        <span class="cat-name">Recruiter outreach</span>
+                        <span style="display: flex; align-items: center; gap: 0.6rem;"><span class="cat-count">{{ recruiter_items|length }}</span>{{ chevron() }}</span>
+                    </summary>
+                    <p class="cat-note">A recruiter emailed about an opportunity you didn't apply for.</p>
+                    <div class="cat-body">
+                        {% for item in recruiter_items %}
+                            {{ source_row(item, loop.index) }}
+                        {% endfor %}
+                    </div>
+                </details>
+            {% endif %}
+
+            {% if general_items %}
+                <details class="cat-card">
+                    <summary>
+                        <span class="cat-name">General / promotional</span>
+                        <span style="display: flex; align-items: center; gap: 0.6rem;"><span class="cat-count">{{ general_items|length }}</span>{{ chevron() }}</span>
+                    </summary>
+                    <div class="cat-body">
+                        {% for item in general_items %}
+                            {{ source_row(item, loop.index) }}
+                        {% endfor %}
+                    </div>
+                </details>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="recap-card">
+            <p class="recap-body mb-0">No emails found on this day.</p>
+        </div>
+    {% endif %}
+
+    <div class="stat-row mt-3" style="grid-template-columns: repeat(2, minmax(140px, 1fr));">
+        <div class="stat-card stat-card-highlight">
+            <div class="stat-window">Real job-search activity</div>
+            <div class="stat-number stat-total">{{ real_total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-window">General / promotional</div>
+            <div class="stat-number">{{ general_total }}</div>
+        </div>
+    </div>
+
+    <a href="{{ url_for('emails.calendar_view') }}" class="btn btn-google w-100 mt-3">Back to Calendar</a>
+    <a href="{{ url_for('main.home') }}" class="btn btn-primary w-100 mt-2">Continue to Dashboard</a>
+{% endblock %}

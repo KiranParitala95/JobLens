@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - JobLens{% endblock %}
+{% block container_class %}dashboard-container{% endblock %}
+
+{% block content %}
+    <h1 class="display-font fw-bold mb-1" style="font-size: 1.75rem;">Privacy Policy</h1>
+    <p class="text-muted mb-4">Last updated: November 2, 2026</p>
+
+    <p>JobLens is a job-search tracker. It reads your Gmail inbox, finds job-related emails, and shows you a dashboard of your applications, rejections, interviews and assessments. This page explains what it accesses, what it stores, and your choices.</p>
+
+    <h2 class="h5 fw-bold mt-4">What JobLens accesses</h2>
+    <p>If you sign in with Google, JobLens asks for read-only access to your Gmail (the <code>gmail.readonly</code> permission). It cannot send, delete, or change any of your email. JobLens only looks at mail for the specific day you choose on the calendar. It also reads your Sent mail on that day, only to spot follow-up messages you wrote to employers or recruiters. JobLens scans your Spam folder too, because job replies sometimes land there, and marks those emails "from Spam". It also reads mail you have deleted (Gmail keeps it in Trash for 30 days), so that an email you deleted before it was scanned is not lost from your record, and marks those emails "Deleted (in Trash)". Once Gmail removes an email for good, JobLens cannot see it.</p>
+
+    <h2 class="h5 fw-bold mt-4">What JobLens stores</h2>
+    <ul>
+        <li>Your first and last name, username, email address, and either a hashed password or your Google account ID.</li>
+        <li>The Google access and refresh tokens that let JobLens read your mail on your behalf.</li>
+        <li>For each email it processes: its Gmail message ID, a short text snippet, the date received, a category (such as application, rejection, interview, assessment, follow-up sent, recruiter outreach, or general), the sender's name, a one-line description, for job-related emails a sender-check label (direct, platform or could not verify) with a short reason, and, where found, the company, role, and deadline.</li>
+        <li>Your time zone, so that days on the calendar match your own.</li>
+    </ul>
+    <p>JobLens does not store the full body of your emails.</p>
+
+    <h2 class="h5 fw-bold mt-4">How your email text is used</h2>
+    <p>To sort each email, JobLens first reads its full text on its own server, looking only for key phrases (for example, wording that signals a rejection or an interview invite). That full text is not saved and is not sent to any other service.</p>
+    <p>Only a small part of an email is sent to an AI service (Groq or, as a backup, Hugging Face, which may pass the request on to an inference provider) to find the company, role and deadline, or to describe the email in one line: the sender, the subject, the short preview, and the one to three sentences around the matched phrase. For job-related emails it also receives the reply-to address and the result of Gmail's own sender check, so it can tell whether the email appears to come directly from the company. If no phrase matches, the AI is asked to decide from the sender, subject and short preview alone. That text is used only to produce those results for you. JobLens does not use your email content for advertising, does not sell it, and does not share it with anyone else.</p>
+
+    <h2 class="h5 fw-bold mt-4">Google API Services User Data Policy</h2>
+    <p>JobLens's use and transfer of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+    <h2 class="h5 fw-bold mt-4">Your choices</h2>
+    <ul>
+        <li><strong>Revoke access any time</strong> at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">myaccount.google.com/permissions</a>. JobLens can no longer read your mail after that.</li>
+        <li><strong>Delete your data.</strong> Email us and we will delete your account and everything stored about it.</li>
+    </ul>
+
+    <h2 class="h5 fw-bold mt-4">Security</h2>
+    <p>Passwords are stored hashed, never in plain text. JobLens is currently a small project in testing, so please use it with that in mind.</p>
+
+    <h2 class="h5 fw-bold mt-4">Changes and contact</h2>
+    <p>If this policy changes, the date above will be updated. Questions or deletion requests: <a href="mailto:paritalakiran123@gmail.com">paritalakiran123@gmail.com</a>.</p>
+{% endblock %}

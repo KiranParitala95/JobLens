@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - JobLens{% endblock %}
+{% block container_class %}dashboard-container{% endblock %}
+
+{% block content %}
+    <h1 class="display-font fw-bold mb-1" style="font-size: 1.75rem;">Terms of Service</h1>
+    <p class="text-muted mb-4">Last updated: October 17, 2026</p>
+
+    <p>By creating an account or signing in to JobLens, you agree to these terms and to the <a href="{{ url_for('main.privacy') }}">Privacy Policy</a>.</p>
+
+    <h2 class="h5 fw-bold mt-4">The service</h2>
+    <p>JobLens reads the Gmail mail you allow it to see, and organizes job-related emails into a dashboard. It is a small project currently in testing, and features may change or be removed.</p>
+
+    <h2 class="h5 fw-bold mt-4">Your account</h2>
+    <ul>
+        <li>You are responsible for your account and for keeping your password secure.</li>
+        <li>Only connect a Gmail account you own or are authorized to use.</li>
+        <li>You can stop using JobLens at any time and revoke its access from your Google account.</li>
+    </ul>
+
+    <h2 class="h5 fw-bold mt-4">Accuracy</h2>
+    <p>Emails are sorted using key-phrase matching and an AI model, which can make mistakes. Counts, categories, companies and dates are a convenience, not a guaranteed record. Always check important emails yourself before acting on them.</p>
+
+    <h2 class="h5 fw-bold mt-4">Provided as is</h2>
+    <p>JobLens is provided "as is", without warranties of any kind, and may be unavailable or contain errors. To the extent permitted by law, the creator is not liable for any loss arising from your use of the service.</p>
+
+    <h2 class="h5 fw-bold mt-4">Changes and ending access</h2>
+    <p>These terms may be updated, and the date above will change when they are. Access may be changed or ended at any time, including for misuse of the service.</p>
+
+    <h2 class="h5 fw-bold mt-4">Contact</h2>
+    <p>Questions: <a href="mailto:paritalakiran123@gmail.com">paritalakiran123@gmail.com</a>.</p>
+{% endblock %}

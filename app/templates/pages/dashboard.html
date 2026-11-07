@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - JobLens{% endblock %}
+{% block container_class %}dashboard-container{% endblock %}
+
+{% block content %}
+    <div class="dashboard-hero" style="background: none; border-bottom: none; padding-bottom: 0;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="hero-greeting" style="font-size: 1.5rem;">Welcome, {{ current_user.display_name }}</div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-google">Log out</a>
+        </div>
+
+        <div class="recap-card">
+            <div class="recap-headline">
+                <span class="status-dot {{ 'active' if sections.applications.last_7d > 0 or sections.rejections.last_7d > 0 or sections.interviews_scheduled.last_7d > 0 or sections.assessments.last_7d > 0 else 'quiet' }}"></span>
+                {{ summary.headline }}
+            </div>
+            <p class="recap-body">{{ summary.recap }}</p>
+        </div>
+    </div>
+
+    {% set section_titles = {
+        "applications": "Applications",
+        "rejections": "Rejections",
+        "interviews_assessments": "Interviews / Assessments / Screenings",
+        "offers": "Offers",
+        "follow_ups": "Follow-ups sent",
+        "recruiter_outreach": "Recruiter outreach",
+        "general": "General / Other"
+    } %}
+    {% set section_descs = {
+        "applications": "applications submitted",
+        "rejections": "rejections received",
+        "interviews_assessments": "interviews, assessments, screenings",
+        "offers": "offers received",
+        "follow_ups": "follow-ups you sent",
+        "recruiter_outreach": "recruiters who reached out",
+        "general": "promotions, alerts, etc."
+    } %}
+
+    {% for key, title in section_titles.items() %}
+        <p class="section-label">{{ title }}</p>
+        <div class="stat-row">
+            <div class="stat-card">
+                <div class="stat-window">Today</div>
+                <div class="stat-number">{{ sections[key].last_24h }}</div>
+                <div class="stat-desc">{{ section_descs[key] }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-window">Last 7 Days</div>
+                <div class="stat-number">{{ sections[key].last_7d }}</div>
+                <div class="stat-desc">~{{ (sections[key].last_7d / 7) | round(1) }}/day avg</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-window">Last 30 Days</div>
+                <div class="stat-number">{{ sections[key].last_30d }}</div>
+                <div class="stat-desc">~{{ (sections[key].last_30d / 4) | round(1) }}/week avg</div>
+            </div>
+            <div class="stat-card stat-card-highlight">
+                <div class="stat-window">Total</div>
+                <div class="stat-number stat-total">{{ sections[key].total }}</div>
+                <div class="stat-desc">all-time</div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <p class="section-label">Response rate</p>
+    <div class="stat-card" style="max-width: 260px;">
+        <div class="stat-window">Overall</div>
+        <div class="stat-number stat-total">{{ response_rate }}</div>
+        <div class="progress-track">
+            <div class="progress-fill" style="width: {{ response_rate }};"></div>
+        </div>
+        <div class="stat-desc">of applications got a response</div>
+    </div>
+
+    <a href="{{ url_for('emails.calendar_view') }}" class="btn btn-primary w-100 mt-4">Back to Calendar</a>
+{% endblock %}

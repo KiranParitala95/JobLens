@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Sign up - JobLens{% endblock %}
+
+{% block content %}
+    <h2 class="text-center fw-bold mb-2 display-font">Create your account</h2>
+    <p class="text-center text-muted mb-4">Start tracking your job search</p>
+
+    <a href="{{ url_for('google_auth.login') }}" class="btn btn-google w-100 text-decoration-none">
+        <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.6 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.6 3.5 24 3.5 12.7 3.5 3.5 12.7 3.5 24S12.7 44.5 24 44.5 44.5 35.3 44.5 24c0-1.2-.1-2.4-.3-3.5z"/>
+            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 12 24 12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.6 3.5 24 3.5c-7.5 0-13.9 4.2-17.2 10.4z"/>
+            <path fill="#4CAF50" d="M24 44.5c5.5 0 10.4-1.9 14.2-5.1l-6.6-5.4C29.5 35.6 26.9 36.5 24 36.5c-5.2 0-9.5-3.3-11.1-7.9l-6.5 5C9.9 40.2 16.4 44.5 24 44.5z"/>
+            <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.6l6.6 5.4C41.4 35.6 44.5 30.3 44.5 24c0-1.2-.1-2.4-.3-3.5z"/>
+        </svg>
+        Continue with Google
+    </a>
+    <p class="text-center text-muted mt-2 mb-0" style="font-size: 0.75rem;">
+        By continuing with Google you agree to the
+        <a href="{{ url_for('main.terms') }}" class="text-muted">Terms</a> and
+        <a href="{{ url_for('main.privacy') }}" class="text-muted">Privacy Policy</a>.
+    </p>
+
+    <div class="divider">Or continue with email</div>
+
+    <form method="POST" action="{{ url_for('auth.signup') }}" autocomplete="off">
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label for="first_name" class="form-label">First name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name"
+                       maxlength="50" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" required>
+            </div>
+            <div class="col-6">
+                <label for="last_name" class="form-label">Last name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name"
+                       maxlength="50" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email"
+                   pattern="[A-Za-z0-9._%+-]+@gmail\.com"
+                   title="Must be a gmail.com address"
+                   autocomplete="off" readonly onfocus="this.removeAttribute('readonly')"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <div class="position-relative">
+                <input type="password" class="form-control" id="password" name="password"
+                       pattern="[A-Z](?=.*[!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;]).{6,}"
+                       title="Start with a capital letter, at least 7 characters, include a special character"
+                       style="padding-right: 2.75rem;"
+                       autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly')"
+                       required>
+                <button type="button" id="togglePassword"
+                        class="btn btn-sm position-absolute"
+                        style="right: 6px; top: 50%; transform: translateY(-50%); border: none; background: none; padding: 0.25rem;">
+                    <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="form-text" style="font-size: 0.75rem;">
+                Capital first letter, 7+ characters, a special character
+            </div>
+        </div>
+
+        <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+            <label class="form-check-label" for="agree" style="font-size: 0.85rem;">
+                I agree to the
+                <a href="{{ url_for('main.terms') }}" target="_blank">Terms of Service</a> and
+                <a href="{{ url_for('main.privacy') }}" target="_blank">Privacy Policy</a>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-3">Sign up</button>
+    </form>
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function () {
+            const input = document.getElementById("password");
+            const isHidden = input.type === "password";
+            input.type = isHidden ? "text" : "password";
+
+            // Swap between an open eye and a slashed-eye icon so the
+            // button's state is visible, not just the input's.
+            document.getElementById("eyeIcon").innerHTML = isHidden
+                ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+                : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        });
+    </script>
+
+    <p class="text-center mt-4">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Log in</a>
+    </p>
+{% endblock %}

@@ -1,0 +1,21 @@
+# Secrets - never commit these
+.env
+.env.*
+!.env.example
+
+# Local database (contains users and their mail details)
+instance/
+*.db
+*.sqlite3
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Editor and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
