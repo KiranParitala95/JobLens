@@ -160,10 +160,11 @@ CONDITIONAL = [
     "should you be shortlisted",
     "if selected",
     "if shortlisted",
-    "if there is a match",
+    "if you are among the candidates",
     "if we decide to move forward",
     r"re:if you (are|were) (selected|shortlisted|approved|chosen|qualified)",
-    r"re:if your [^.]{0,40}\b(match|fit)\b",
+    r"re:if your [^.]{0,40}\b(match|fit|aligns?)\b",
+    r"re:if there('s| is| are)[^.]{0,30}\b(match|fit)\b",
     # Mails that only announce a later mail ("watch for an email with the
     # link"): the real invitation is judged when that later mail arrives.
     "be on the lookout for",
